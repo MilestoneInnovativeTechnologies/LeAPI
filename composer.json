@@ -1,0 +1,24 @@
+{
+    "name": "milestone/leapi",
+    "description": "Laravel ePlus API",
+    "type": "laravel-package",
+    "autoload": {
+        "psr-4": {
+            "Milestone\\Leapi\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Milestone Innovative Technologies",
+            "email": "info@milestoneit.net"
+        }
+    ],
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Milestone\\LeAPI\\LeAPIServiceProvider"
+            ]
+        }
+    }
+}
