@@ -2,7 +2,10 @@
 
 namespace Milestone\LeAPI;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Milestone\LeAPI\middleware\LeAPIAuth;
+use Milestone\LeAPI\middleware\LeAPILog;
 
 class LeAPIServiceProvider extends ServiceProvider
 {
@@ -13,7 +16,12 @@ class LeAPIServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->mergeConfigFrom(self::path('config.php'), 'leapi');
+        config([
+            'logging.default'   =>  'daily',
+            'app.timezone'      =>  config('leapi.timezone'),
+        ]);
+        date_default_timezone_set(config('leapi.timezone'));
     }
 
     /**
@@ -23,6 +31,16 @@ class LeAPIServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        if($this->app->runningInConsole()) {
+            $this->publishes([
+                self::path('config.php') => config_path('leapi.php')
+            ]);
+        } else {
+            Route::middleware(['api',LeAPIAuth::class,LeAPILog::class])->prefix('leapi/{client}/{action}/{table}')->group(self::path('routes.php'));
+        }
+    }
+
+    private static function path(...$paths):string {
+        return implode(DIRECTORY_SEPARATOR,[__DIR__,'..',...$paths]);
     }
 }
