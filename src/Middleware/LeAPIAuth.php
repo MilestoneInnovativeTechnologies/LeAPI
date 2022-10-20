@@ -1,12 +1,11 @@
 <?php
 
-namespace Milestone\LeAPI\middleware;
+namespace Milestone\LeAPI\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
-class LeAPILog
+class LeAPIAuth
 {
     /**
      * Handle an incoming request.
@@ -17,7 +16,11 @@ class LeAPILog
      */
     public function handle(Request $request, Closure $next)
     {
-        if(config('leapi.log')) Log::info(implode("\t",[now()->toDateTimeString(),CLIENT,ACTION,TABLE]));
+        $CLIENTS = config('leapi.CLIENTS');
+        $clients = array_keys($CLIENTS); $client = $request->route('client');
+        if(!in_array($client,$clients)) return response('Unauthorized',401);
+        define('CLIENT',$CLIENTS[$client]); define('CLIENT_ID',$client);
+        define('ACTION',$request->route('action')); define('TABLE',$request->route('table'));
         return $next($request);
     }
 }

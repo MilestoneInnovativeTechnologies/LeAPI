@@ -4,8 +4,8 @@ namespace Milestone\LeAPI;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Milestone\LeAPI\middleware\LeAPIAuth;
-use Milestone\LeAPI\middleware\LeAPILog;
+use Milestone\LeAPI\Middleware\LeAPIAuth;
+use Milestone\LeAPI\Middleware\LeAPILog;
 
 class LeAPIServiceProvider extends ServiceProvider
 {
