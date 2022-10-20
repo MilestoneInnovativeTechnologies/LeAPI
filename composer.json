@@ -4,7 +4,7 @@
     "type": "laravel-package",
     "autoload": {
         "psr-4": {
-            "Milestone\\Leapi\\": "src/"
+            "Milestone\\LeAPI\\": "src/"
         }
     },
     "authors": [
