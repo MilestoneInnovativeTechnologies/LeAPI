@@ -4,7 +4,9 @@ namespace Milestone\LeAPI\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class APIController extends Controller
 {
@@ -16,17 +18,39 @@ class APIController extends Controller
     }
 
     public function get($table,Request $request) {
-        $query = DB::table($table);
+        $query = DB::table($table); $columns = Schema::getColumnListing($table);
 
         if($request->id){
             $ids = $request->id; $ids = explode(',',$ids);
-            if(count($ids) === 1) $query = $query->where('id',$ids[0]);
-            else $query = $query->whereIn('id',$ids);
+            if(count($ids) === 1) $query->where('id',$ids[0]);
+            else $query->whereIn('id',$ids);
+        }
+
+        foreach ($columns as $column){
+            if($request->filled($column)){
+                $values = $request->get($column);
+                $operator = $request->get($column . '_operator','=');
+                if($request->filled($column . '_operator')) {
+                    $query->where($column,$operator,$values);
+                } else {
+                    $valuesArray = explode(',',$values);
+                    if(count($valuesArray) === 1) $query->where($column,$operator,$values);
+                    $query->whereIn($column,$valuesArray);
+                }
+            }
+        }
+
+        if($request->filled('order_by')) {
+            $order_by = $request->get('order_by','id,asc'); $direction = 'asc';
+            if(strpos($order_by,',')) [$column,$direction] = explode(',',$order_by);
+            else $column = $order_by;
+            if(!in_array($direction ?? '',['asc','desc','ASC','DESC'])) $direction = 'asc';
+            $query->orderBy($column,$direction);
         }
 
         if($request->has('limit')) {
             [$skip,$take] = explode(',',$request->get('limit','0,10'));
-            $query = $query->skip($skip)->take($take);
+            $query->skip($skip)->take($take);
         }
 
         if($request->has('count')) return [$query->count()];

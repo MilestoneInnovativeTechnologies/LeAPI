@@ -24,6 +24,15 @@ URL Format:<br>
 `limit=0,100` for getting 100 number of data after skipping 0 records.<br>
 `count` if the parameters have a key named count, then the count of query will be returned<br>
 `fields=id` `fields=date,progress` returns only specified columns only<br>
+`order_by=id,asc` to sort records by id in ascending order. supported directions are asc,desc
+
+##### Conditions
+conditions can be given by<br>
+`<column_name>=value` Ex: `id=4`,`progress=billed`.<br>
+If other than equal operator, it should be given as `<column_name>_operator=<`<br>
+Ex: `date=2022-10-31 18:15:00&date_operator=>` this will fetch records having date greater than 2022-10-31 18:15:00
+If there is no operator given, and values are given as coma seperated like completed,served, then operator will be assigned as `in`<br>
+Ex: `progress=completed,served` will fetch all records having progress as `completed` or `served`
 
 ##### Aggregator functions
 `max=price` returns the maximum value of price. `max=id` this will return maximum of id. If passed without value, then `max=id` will be considered<br>
